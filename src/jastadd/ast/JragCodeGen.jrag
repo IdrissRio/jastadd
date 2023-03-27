@@ -1012,8 +1012,13 @@ aspect Compute {
   eq CollDecl.circularComputeRhs() = String.format("combine_%s_contributions(%s)",
       signature(), getBottomValue());
 
+  syn boolean AttrDecl.isNonCircular();
+  eq AttrDecl.isNonCircular() = false;
+  eq SynDecl.isNonCircular() = getisNonCircular();
+
   syn boolean AttrDecl.simpleCacheCheck() =
-      !config().safeLazy() || isCircular() || declaredNTA() || isAttrNTA();
+      !config().safeLazy() || isCircular() || declaredNTA() || isAttrNTA()
+      || isNonCircular();
 
   syn boolean AttrDecl.cacheInCycle() = !simpleCacheCheck();
 }

@@ -25,7 +25,7 @@ Annotation ::= <Annotation:String>;
 abstract AttrDecl ::= Parameter* <Name> <Type> <CacheMode:CacheMode> <FileName> <StartLine:int>
     <EndLine:int> <Final:boolean> <NTA:boolean> <Comment:String> <AspectName:String> Annotation*;
 
-SynDecl : AttrDecl;
+SynDecl : AttrDecl::= <isNonCircular:boolean>;
 
 /**
  * Only used to generate code for implicit circular rewrite NTAs.

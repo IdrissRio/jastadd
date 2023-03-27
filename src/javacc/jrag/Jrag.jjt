@@ -263,6 +263,7 @@ TOKEN :
 | < NTA: "nta">
 | < CACHE: "cache">
 | < UNCACHE: "uncache">
+| < NONCIRCULAR: "dnc">
 }
 
 TOKEN :
@@ -798,6 +799,7 @@ void AspectInterfaceSynAttributeDeclaration() :
   boolean init = false;
   boolean isLazy = false;
   boolean isFinal = false;
+  boolean isNonCircular = false;
   SimpleNode bottomValue = null;
 
   ArrayList<String> annotations = new ArrayList<String>();
@@ -820,12 +822,17 @@ void AspectInterfaceSynAttributeDeclaration() :
     <CIRCULAR> <LBRACKET> bottomValue = Expression() <RBRACKET>
   ]
 
+  [
+    <NONCIRCULAR>{isNonCircular = true;}
+  ]
+
+
   ";" { last = token; }
   {
     root.addSynDecl(attrName.image, attrType, className,
         isLazy, fileName, first.beginLine, last.endLine, list,
         bottomValue == null ? "" : Unparser.unparse(bottomValue),
-        isFinal, false, jjtThis, enclosingAspect, annotations);
+        isFinal, false, jjtThis, enclosingAspect, annotations, isNonCircular);
 
   }
 }
@@ -1029,6 +1036,7 @@ void AspectSynAttributeDeclaration() :
   boolean isLazy = false;
   SimpleNode bottomValue = null;
   boolean isFinal = false;
+  boolean isNonCircular = false;
   boolean isNTA = false;
 
   ArrayList<String> annotations = new ArrayList<String>();
@@ -1062,6 +1070,10 @@ void AspectSynAttributeDeclaration() :
     <CIRCULAR> <LBRACKET> bottomValue = Expression() <RBRACKET>
   ]
 
+  [
+    <NONCIRCULAR>{isNonCircular = true;}
+  ]
+
   ( ("=" eq = Expression() ";" { last = token; init = true;} )
   | (eq = Block() { last = token; init = true;})
   | ";" { last = token; } )
@@ -1070,7 +1082,7 @@ void AspectSynAttributeDeclaration() :
     root.addSynDecl(attrName.image, attrType, targetName,
         isLazy, fileName, first.beginLine,
         last.endLine, list, bottomValue == null ? "" : Unparser.unparse(bottomValue),
-        isFinal, isNTA, jjtThis, enclosingAspect, annotations);
+        isFinal, isNTA, jjtThis, enclosingAspect, annotations, isNonCircular);
 
     if (init) {
       root.addSynEq(attrName.image, targetName, eq, fileName, first.beginLine,

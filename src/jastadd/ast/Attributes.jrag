@@ -222,7 +222,8 @@ public aspect Attributes {
       boolean isNTA,
       org.jastadd.jrag.AST.SimpleNode node,
       String aspectName,
-      ArrayList<String> annotations) {
+      ArrayList<String> annotations,
+      boolean isNonCircular) {
     SynDecl decl = new SynDecl(
         parameterList,
         name,
@@ -235,7 +236,8 @@ public aspect Attributes {
         isNTA,
         Unparser.unparseComment(node),
         aspectName,
-        new List());
+        new List(),
+        isNonCircular);
     for (String annotation : annotations) {
       decl.addAnnotation(new Annotation(annotation));
     }
