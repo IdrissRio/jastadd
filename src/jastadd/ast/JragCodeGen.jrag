@@ -202,6 +202,7 @@ aspect JragCodeGen {
       imports.add(new ImportDecl("java.util.LinkedList"));
       imports.add(new ImportDecl("java.util.Collection"));
     }
+    imports.add(new ImportDecl("java.util.Stack"));
     for (org.jastadd.jrag.AST.ASTCompilationUnit u : compilationUnits) {
       imports.addAll(Unparser.getImports(u));
     }
@@ -371,6 +372,10 @@ aspect JragCodeGen {
         templateContext().expand("AttrDecl.componentCheckDeclaration", out);
       }
     }
+  }
+
+  public void AttrDecl.emitInterruptedCircleDeclaration(PrintStream out) {
+    templateContext().expand("AttrDecl.interruptedCircleDeclaration", out);
   }
 
   public void AttrDecl.emitCacheDeclarations(PrintStream out) {
@@ -684,6 +689,7 @@ aspect JragCodeGen {
     // an equation lacks its own visited declaration and calls an overriden
     // equation it can cause a circularity exception.
     attr.emitVisitedDeclarations(out);
+    attr.emitInterruptedCircleDeclaration(out);
     if (!attr.isCircular()) {
       attr.emitResetMethod(out);
       if (attr.isMemoized()) {

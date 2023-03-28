@@ -25,7 +25,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+
 ASTState = [[
+
+
 /** Wrapper class for storing nullable attribute values. */
 public class AttributeValue<T> {
   /**
@@ -97,6 +100,20 @@ public class $StateClass {
     Object value;
     Cycle cycle;
   }
+
+$if(SafeLazy)
+  Stack<CircleState> circleStack = new Stack<>();
+
+
+  public void pushCircle(CircleState circle) {
+    circleStack.push(circle);
+  }
+
+  public CircleState popCircle() {
+    return circleStack.pop();
+  }
+
+$endif
 
   /**
    * Instances of this class are used to uniquely identify circular evaluation iterations.
@@ -351,6 +368,12 @@ $endif
   protected boolean changeInCycle() {
     return circle.change;
   }
+
+  /** @apilevel internal */
+  protected void setCircle(CircleState circle) {
+    this.circle = circle;
+  }
+
 
 $if(CacheCycle)
   /** @apilevel internal */

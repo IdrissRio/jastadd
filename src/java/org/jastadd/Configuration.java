@@ -327,6 +327,7 @@ public class Configuration {
 
   Option<Boolean> safeLazyOption = new FlagOption("safeLazy",
       "safe in-cycle caching of non-circular attributes")
+      .templateVariable("SafeLazy")
       .nonStandard();
 
   Option<Boolean> concurrentOption = new BooleanOption("concurrent",

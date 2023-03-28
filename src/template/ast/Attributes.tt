@@ -72,6 +72,14 @@ $else
 $endif
 ]]
 
+AttrDecl.interruptedCircleDeclaration [[
+  $if(#isNonCircular)
+  /** @apilevel internal */
+  protected boolean #(signature)_interruptedCircle = false;
+  $endif
+]]
+
+
 # Method headers for attribute declarations.
 AttrDecl.synDecl = AttrDecl.inhDecl [[
 #docComment
@@ -285,8 +293,18 @@ $DocComment
     $include(AttrDecl.checkVisited)
     $include(AttrDecl.setVisited)
     $include(AttrDecl.cacheInit)
+    $if(!#isNonCircular)
     $include(AttrDecl.enterLazyAttribute)
+    $endif
     $include(AttrDecl.traceComputeBegin)
+    $if(#isNonCircular)
+    if(#(signature)_interruptedCircle){
+      throw new RuntimeException("Circular definition of a definitely not circular attribute #hostClassName.#signatureJavaStyle.");
+    }
+    state().pushCircle(state().currentCircle());
+    state().reset();
+    #(signature)_interruptedCircle = true;
+    $endif
     #computeLhs = $ComputeRhs;
 $if(EmptyContainerSingletons)
   $if(#isOptNTA)
@@ -303,7 +321,15 @@ $endif
     $include(AttrDecl.traceComputeEnd)
     #higherOrderAttributeCode
     $include(AttrDecl.cacheUpdate)
+      $if(#isNonCircular)
+        if(#(signature)_interruptedCircle){
+          state().setCircle(state().popCircle());
+          #(signature)_interruptedCircle = false;
+        }
+      $endif
+    $if(!#isNonCircular)
     $include(AttrDecl.leaveLazyAttribute)
+    $endif
     $include(AttrDecl.clearVisited)
     $include(AttrDecl.returnStmt)
   }
